@@ -1,0 +1,71 @@
+
+const setReferralSourceCookie = () => {
+	const referrer = document.referrer;
+	const referralID = getCookie('referralId');
+	const params = (new URL(document.location)).searchParams;
+	const referralVals = ['Paid','Organic','Social','Newsletter','Nexstar Referral','Referral','Direct','Other'];
+
+	// If cookie is set to a valid referral source,
+	// refresh its expiration date to one hour from now.
+	if (referralVals.includes(referralID)) {
+		setCookie('referralId', referralID);
+		return;
+	}
+
+	let referrerDomain = '';
+	if (referrer) {
+		referrerDomain = referrer.split('/')[2];
+	}
+
+	const utmSource = params.get('utm_source') ?? '';
+	const utmMedium = params.get('utm_medium') ?? '';
+
+	const isSocial = 'social' === utmMedium.toLowerCase() || matchesAny(referrerDomain, window.amScripts['ad_referral_source_inline']['socialSites'] || []);
+	const isPaid = includesAny(referrer, ['paid.outbrain.com']) || 'capital' === utmSource.toLowerCase() || params.has('gclid');
+	const isOrganic = includesAny(referrer, ['google', 'bing', 'yahoo', 'duckduckgo']);
+	const notNews = ! referrer.includes('news');
+	const isNexstar = includesAny(referrer, window.amScripts["ad_referral_source_inline"]['nxstDomains'] || []);
+	const isNewsletter = 'sailthru' === utmSource.toLowerCase();
+	const isDirect = 'none' === referrer || '' === referrer;
+
+	if (isPaid) {
+		setCookie('referralId', 'Paid');
+	} else if (isOrganic && notNews) {
+		setCookie('referralId', 'Organic');
+	} else if (isSocial) {
+		setCookie('referralId', 'Social');
+	} else if (isNewsletter) {
+		setCookie('referralId', 'Newsletter');
+	} else if (isNexstar) {
+		setCookie('referralId', 'Nexstar Referral');
+	} else if (referrer) {
+		setCookie('referralId', 'Referral');
+	} else if (isDirect) {
+		setCookie('referralId', 'Direct');
+	} else {
+		setCookie('referralId', 'Other');
+	}
+}
+
+const matchesAny = (referrer, urls) => {
+	if (!urls.length)
+		console.error('Social sites are empty for ad-referral-source.');
+	for (const url of urls) {
+		if (referrer === url) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const includesAny = (referrer, urls) => {
+	if (!urls.length)
+		console.error('Nexstar domains are empty for ad-referral-source.');
+	for (const url of urls) {
+		if ('' !== url && referrer.includes(url)) {
+			return true;
+		}
+	}
+	return false;
+}
+setReferralSourceCookie()

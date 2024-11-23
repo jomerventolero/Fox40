@@ -1,0 +1,12 @@
+// Get Prebid and Amazon timeout values from admin,
+// then set variables based on browser width.
+
+const browserWidth = window.innerWidth;
+const prebidDisplayTimeout = adAuctionBreakpoint < browserWidth ? timeoutPrebidDisplayDesktop : timeoutPrebidDisplayMobile;
+const amazonDisplayTimeout = adAuctionBreakpoint < browserWidth ? timeoutAmazonDisplayDesktop : timeoutAmazonDisplayMobile;
+const prebidVideoTimeout = adAuctionBreakpoint < browserWidth ? timeoutPrebidVideoDesktop : timeoutPrebidVideoMobile;
+const amazonVideoTimeout = adAuctionBreakpoint < browserWidth ? timeoutAmazonVideoDesktop : timeoutAmazonVideoMobile;
+window.prebidDisplayTimeout = prebidDisplayTimeout;
+window.amazonDisplayTimeout = amazonDisplayTimeout;
+window.prebidVideoTimeout = prebidVideoTimeout;
+window.amazonVideoTimeout = amazonVideoTimeout;

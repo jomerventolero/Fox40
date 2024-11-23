@@ -1,0 +1,19 @@
+function minuteMediaS2NApi(getS2NApiForPlayer) {
+    const featuredPlayers = document.querySelectorAll('.article-featured-media .media-wrapper');
+    const s2nPlayer = document.querySelector('#s2n-player');
+    const s2nApi = getS2NApiForPlayer(s2nPlayer);
+
+    if (featuredPlayers.length > 0) {
+        s2nApi.float = false;
+    }
+
+    addEventListener('OVPPlayerEvent', ({ detail }) => {
+        const { eventName } = detail;
+
+        if (eventName !== 'playerFloat') {
+            return;
+        }
+
+        s2nApi.float = false;
+    })
+}
